@@ -152,20 +152,32 @@ export function Header() {
 
             {/* Center: Logo */}
             <div className="flex-shrink-0 absolute left-1/2 -translate-x-1/2 h-full flex items-center justify-center">
-              <Link href="/" className="flex items-center justify-center group h-full">
-                <motion.div style={{ scale: logoScale }}>
-                  <Atom className="text-red transition-all duration-700 ease-[0.22,1,0.36,1] group-hover:rotate-180 w-12 h-12" />
+              <Link href="/" className="flex items-center justify-center h-full cursor-pointer">
+                <motion.div 
+                  style={{ scale: logoScale }}
+                  initial={{ rotate: 0 }}
+                  animate={{ rotate: isScrolled ? 180 : 0 }}
+                  whileHover={{ rotate: isScrolled ? 360 : 180 }}
+                  transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <Atom className="text-red w-12 h-12" />
                 </motion.div>
               </Link>
             </div>
 
             {/* Right side: Helpers & CTA */}
-            <div className="flex items-center justify-end gap-6 flex-[1.5] h-full">
-              <button className="hidden sm:flex hover:text-red transition-colors p-2">
-                <Search className="w-6 h-6" />
+            <div className="flex items-center justify-end gap-4 md:gap-6 flex-[1.5] h-full">
+              
+              {/* Expanding Search Pill */}
+              <button className="hidden sm:flex items-center justify-start overflow-hidden rounded-full transition-all duration-500 ease-[0.22,1,0.36,1] w-10 h-10 hover:w-[130px] hover:bg-white/10 group px-[9px]">
+                <Search className="w-5 h-5 flex-shrink-0 text-white group-hover:text-red transition-colors" />
+                <span className="ml-3 text-[13px] font-oswald tracking-widest text-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap mt-0.5 flex-shrink-0">
+                  SEARCH...
+                </span>
               </button>
-              <button className="hover:text-red transition-colors hidden sm:flex items-center justify-center p-2">
-                <User className="w-6 h-6" />
+
+              <button className="hover:text-red transition-colors hidden sm:flex items-center justify-center p-2 w-10 h-10 rounded-full hover:bg-white/5">
+                <User className="w-5 h-5" />
               </button>
               <motion.a
                 href="#join"
