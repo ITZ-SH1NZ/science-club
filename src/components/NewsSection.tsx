@@ -116,8 +116,9 @@ export function NewsSection() {
                 </div>
 
                 {/* ── Top Level Fixed Bar (Collapsed Information) ── */}
-                <div className="absolute top-0 left-0 right-0 flex items-center justify-between gap-4 md:gap-8 w-full h-20 lg:h-24 px-4 sm:px-6 md:px-8 z-20 pointer-events-none">
+                <div className="absolute top-0 left-0 right-0 flex items-center gap-4 md:gap-8 w-full h-20 lg:h-24 px-4 sm:px-6 md:px-8 z-20 pointer-events-none">
                     
+                    {/* Left: Date + divider */}
                     <div className="flex items-center gap-4 sm:gap-6 flex-shrink-0">
                        <span className={cn(
                           "font-oswald tracking-widest text-xs sm:text-sm font-bold uppercase transition-colors duration-[800ms]",
@@ -129,28 +130,30 @@ export function NewsSection() {
                        )} />
                     </div>
 
-                    {/* Pulsing BREAKING badge — only shown on the flagged item while collapsed */}
-                    {(item as any).breaking && !isExpanded && (
-                      <span className="hidden sm:flex items-center gap-1.5 mr-auto font-oswald text-[10px] tracking-[0.2em] font-bold uppercase text-red">
-                        <span className="relative flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red opacity-75" />
-                          <span className="relative inline-flex h-2 w-2 rounded-full bg-red" />
-                        </span>
-                        Breaking
-                      </span>
-                    )}
-                    
+                    {/* Centre-left: Headline — left aligned, takes remaining space */}
                     <h3 className={cn(
-                        "font-oswald text-lg sm:text-2xl lg:text-3xl uppercase font-bold transition-all duration-[600ms] ease-[0.22,1,0.36,1] truncate max-w-[45%] mr-auto",
+                        "font-oswald text-lg sm:text-2xl lg:text-3xl uppercase font-bold transition-all duration-[600ms] ease-[0.22,1,0.36,1] truncate flex-1 min-w-0",
                         isExpanded ? "opacity-0 -translate-y-4" : "opacity-100 translate-y-0 text-navy"
                     )}>
                       {item.title}
                     </h3>
 
-                    <ArrowUpRight className={cn(
-                        "w-5 h-5 lg:w-6 lg:h-6 transition-all duration-[600ms]",
-                        isExpanded ? "text-white scale-50 opacity-0" : "text-navy group-hover:text-red scale-100 opacity-100"
-                    )} />
+                    {/* Right: BREAKING badge + Arrow */}
+                    <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+                      {(item as any).breaking && !isExpanded && (
+                        <span className="hidden sm:flex items-center gap-1.5 font-oswald text-[10px] tracking-[0.2em] font-bold uppercase text-red">
+                          <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red opacity-75" />
+                            <span className="relative inline-flex h-2 w-2 rounded-full bg-red" />
+                          </span>
+                          Breaking
+                        </span>
+                      )}
+                      <ArrowUpRight className={cn(
+                          "w-5 h-5 lg:w-6 lg:h-6 transition-all duration-[600ms]",
+                          isExpanded ? "text-white scale-50 opacity-0" : "text-navy group-hover:text-red scale-100 opacity-100"
+                      )} />
+                    </div>
                 </div>
 
                 {/* ── Progress fill bar — only visible on collapsed items during auto-cycle ── */}
