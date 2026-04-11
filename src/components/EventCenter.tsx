@@ -1,8 +1,8 @@
 "use client";
 
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useInView } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { useRef } from "react";
 import { cn } from "@/lib/utils";
 
 const events = [
@@ -12,7 +12,6 @@ const events = [
     dateMonth: "OCT", 
     type: "CONFERENCE", 
     status: "UPCOMING", 
-    // Replaced dead ID with a 100% reliable matrix/code background pattern
     img: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80" 
   },
   { 
@@ -49,9 +48,68 @@ const events = [
   }
 ];
 
+const AUTO_SCROLL_INTERVAL = 4000; // 4 seconds per card
+
 export function EventCenter() {
   const ref = useRef(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Scroll the carousel to center a specific card index
+  const scrollToIndex = useCallback((index: number) => {
+    const container = scrollRef.current;
+    if (!container) return;
+    // +1 to skip the leading spacer div at position 0
+    const card = container.children[index + 1] as HTMLElement;
+    if (!card) return;
+    const offset = card.offsetLeft - container.offsetWidth / 2 + card.offsetWidth / 2;
+    container.scrollTo({ left: offset, behavior: "smooth" });
+  }, []);
+
+  // Auto-advance timer
+  useEffect(() => {
+    if (isPaused) return;
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => {
+        const next = (prev + 1) % events.length;
+        scrollToIndex(next);
+        return next;
+      });
+    }, AUTO_SCROLL_INTERVAL);
+    return () => clearInterval(timer);
+  }, [isPaused, scrollToIndex]);
+
+  // Detect manual scroll and update active index + pause briefly
+  const handleScroll = useCallback(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const center = container.scrollLeft + container.offsetWidth / 2;
+    let closest = 0;
+    let closestDist = Infinity;
+    const allChildren = Array.from(container.children);
+    // Skip the leading spacer (index 0) and trailing spacer (last index)
+    allChildren.slice(1, allChildren.length - 1).forEach((child, i) => {
+      const el = child as HTMLElement;
+      const cardCenter = el.offsetLeft + el.offsetWidth / 2;
+      const dist = Math.abs(center - cardCenter);
+      if (dist < closestDist) { closestDist = dist; closest = i; }
+    });
+    setActiveIndex(closest);
+    // Pause auto-scroll for 6s after any manual interaction
+    setIsPaused(true);
+    clearTimeout((handleScroll as any)._timer);
+    (handleScroll as any)._timer = setTimeout(() => setIsPaused(false), 6000);
+  }, []);
+
+  const goTo = (index: number) => {
+    setActiveIndex(index);
+    scrollToIndex(index);
+    setIsPaused(true);
+    setTimeout(() => setIsPaused(false), 6000);
+  };
 
   return (
     <section className="bg-white py-12 md:py-16 text-navy font-inter border-b border-gray-200 relative z-30 -mt-16 sm:-mt-24 w-full max-w-[95%] mx-auto left-0 right-0 shadow-[0_15px_40px_rgba(0,0,0,0.06)] rounded-3xl">
@@ -78,13 +136,23 @@ export function EventCenter() {
         </div>
 
         {/* Cinematic Horizontal Scrolling Track */}
-        <div ref={ref} className="flex overflow-x-auto snap-x gap-4 md:gap-6 lg:gap-8 pb-10 pt-4 px-4 -mx-4 hide-scrollbar">
+        <div
+          ref={(el: HTMLDivElement | null) => {
+            (ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
+            (scrollRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+          }}
+          onScroll={handleScroll}
+          className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 lg:gap-8 pb-10 pt-4 hide-scrollbar"
+        >
+          {/* Leading spacer: pushes first card to center */}
+          <div className="min-w-[calc(50vw-130px)] md:min-w-[calc(50vw-200px)] lg:min-w-[calc(50vw-220px)] flex-shrink-0" />
           {events.map((event, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={inView ? { opacity: 1, scale: 1 } : {}}
               transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
+              onClick={() => goTo(i)}
               className={cn(
                 "relative min-w-[260px] h-[360px] md:min-w-[400px] lg:min-w-[440px] md:h-[520px] flex-shrink-0 snap-center rounded-2xl md:rounded-[2rem] flex flex-col group cursor-pointer overflow-hidden transition-all duration-500 isolate",
                 event.status === "UPCOMING" 
@@ -121,14 +189,13 @@ export function EventCenter() {
               {/* Main Content Block */}
               <div className="relative z-10 mt-auto p-5 md:p-8 flex flex-col h-full justify-end overflow-hidden">
                 
-                {/* Text Group - Always visible on mobile, requires hover to slide up completely on desktop */}
                 <div className="flex items-start gap-4 md:gap-5 transform translate-y-0 md:translate-y-8 md:group-hover:translate-y-0 transition-transform duration-500 ease-[0.22,1,0.36,1] mb-2">
                   
-                  {/* High Fashion Date Block */}
+                  {/* Date Block */}
                   <div className="flex flex-col items-center justify-center shrink-0 mt-0 md:mt-1">
                       <span className={cn(
                         "font-oswald text-2xl md:text-4xl lg:text-5xl font-bold leading-none transition-colors duration-500 text-white drop-shadow-md",
-                        event.status === "UPCOMING" && "md:group-hover:text-red" // Keep white on mobile, red on desktop hover
+                        event.status === "UPCOMING" && "md:group-hover:text-red"
                       )}>
                         {event.dateDay}
                       </span>
@@ -137,16 +204,13 @@ export function EventCenter() {
                       </span>
                   </div>
                   
-                  {/* Vertical Divider */}
                   <div className="w-[1px] h-[30px] md:h-[50px] bg-white/30 shrink-0 mt-1" />
                   
-                  {/* Event Title */}
                   <h3 className="font-oswald uppercase text-white text-xl sm:text-2xl md:text-3xl lg:text-[2.5rem] leading-[1.05] font-bold line-clamp-3 md:line-clamp-2 tracking-tight drop-shadow-md">
                     {event.title}
                   </h3>
                 </div>
 
-                {/* Call To Action - Always visible on mobile, hidden on desktop until hover */}
                 <div className="flex justify-between items-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transform translate-y-0 md:translate-y-8 md:group-hover:translate-y-0 transition-all duration-500 delay-100 ease-[0.22,1,0.36,1] pt-4 md:pt-6 ml-0 md:ml-[90px] border-t border-white/20 mt-4 md:mt-0">
                   <span className="text-white text-[10px] md:text-sm font-oswald uppercase tracking-[0.2em] font-bold">
                     {event.status === "UPCOMING" ? "Register Now" : "View Recap"}
@@ -162,7 +226,54 @@ export function EventCenter() {
               </div>
             </motion.div>
           ))}
+          {/* Trailing spacer: allows last card to reach center */}
+          <div className="min-w-[calc(50vw-130px)] md:min-w-[calc(50vw-200px)] lg:min-w-[calc(50vw-220px)] flex-shrink-0" />
         </div>
+
+        {/* ── Progress Track Indicator ── */}
+        <div className="flex items-center gap-2 mt-2 px-4">
+          {events.map((_, i) => {
+            const nextIndex = (activeIndex + 1) % events.length;
+            const isActive = i === activeIndex;
+            const isNext = i === nextIndex;
+
+            return (
+              <button
+                key={i}
+                onClick={() => goTo(i)}
+                aria-label={`Go to event ${i + 1}`}
+                className="relative h-[3px] rounded-full overflow-hidden bg-gray-200 transition-all duration-500 ease-[0.22,1,0.36,1] focus:outline-none"
+                style={{ width: isActive ? "48px" : isNext ? "32px" : "20px" }}
+              >
+                {/* Active dot: static full fill — no animation */}
+                {isActive && (
+                  <span className="absolute inset-0 bg-navy rounded-full" />
+                )}
+
+                {/* Next dot: live fill sweep previewing the upcoming card */}
+                {isNext && !isPaused && (
+                  <span
+                    key={`next-fill-${nextIndex}-${activeIndex}`}
+                    className="absolute inset-y-0 left-0 bg-navy/60 rounded-full"
+                    style={{
+                      animation: `progress-fill ${AUTO_SCROLL_INTERVAL}ms linear forwards`,
+                      width: "0%",
+                    }}
+                  />
+                )}
+              </button>
+            );
+          })}
+
+          {/* Keyframes */}
+          <style>{`
+            @keyframes progress-fill {
+              from { width: 0% }
+              to   { width: 100% }
+            }
+          `}</style>
+        </div>
+
       </div>
     </section>
   );
