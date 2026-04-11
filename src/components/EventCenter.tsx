@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
-import { motion, useInView } from "framer-motion";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -58,6 +58,9 @@ export function EventCenter() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
+  // Guards handleScroll from firing during programmatic smooth-scroll
+  const isAutoScrolling = useRef(false);
+
   // Scroll the carousel to center a specific card index
   const scrollToIndex = useCallback((index: number) => {
     const container = scrollRef.current;
@@ -66,7 +69,10 @@ export function EventCenter() {
     const card = container.children[index + 1] as HTMLElement;
     if (!card) return;
     const offset = card.offsetLeft - container.offsetWidth / 2 + card.offsetWidth / 2;
+    // Lock out handleScroll for the duration of the smooth scroll animation
+    isAutoScrolling.current = true;
     container.scrollTo({ left: offset, behavior: "smooth" });
+    setTimeout(() => { isAutoScrolling.current = false; }, 700);
   }, []);
 
   // Auto-advance timer
@@ -82,8 +88,11 @@ export function EventCenter() {
     return () => clearInterval(timer);
   }, [isPaused, scrollToIndex]);
 
-  // Detect manual scroll and update active index + pause briefly
+  // Detect MANUAL scroll only — gated by isAutoScrolling
   const handleScroll = useCallback(() => {
+    // Ignore scroll events fired by our own programmatic scrollTo()
+    if (isAutoScrolling.current) return;
+
     const container = scrollRef.current;
     if (!container) return;
     const center = container.scrollLeft + container.offsetWidth / 2;
@@ -230,48 +239,57 @@ export function EventCenter() {
           <div className="min-w-[calc(50vw-130px)] md:min-w-[calc(50vw-200px)] lg:min-w-[calc(50vw-220px)] flex-shrink-0" />
         </div>
 
-        {/* ── Progress Track Indicator ── */}
-        <div className="flex items-center gap-2 mt-2 px-4">
-          {events.map((_, i) => {
-            const nextIndex = (activeIndex + 1) % events.length;
-            const isActive = i === activeIndex;
-            const isNext = i === nextIndex;
+        {/* ── Morphing Circle-to-Pill Indicator ── */}
+        <div className="flex items-center gap-[6px] mt-4 px-1">
+          <AnimatePresence>
+            {events.map((_, i) => {
+              const nextIndex = (activeIndex + 1) % events.length;
+              const isActive = i === activeIndex;
+              const isNext   = i === nextIndex;
 
-            return (
-              <button
-                key={i}
-                onClick={() => goTo(i)}
-                aria-label={`Go to event ${i + 1}`}
-                className="relative h-[3px] rounded-full overflow-hidden bg-gray-200 transition-all duration-500 ease-[0.22,1,0.36,1] focus:outline-none"
-                style={{ width: isActive ? "48px" : isNext ? "32px" : "20px" }}
-              >
-                {/* Active dot: static full fill — no animation */}
-                {isActive && (
-                  <span className="absolute inset-0 bg-navy rounded-full" />
-                )}
+              return (
+                <motion.button
+                  key={i}
+                  layout
+                  onClick={() => goTo(i)}
+                  aria-label={`Go to event ${i + 1}`}
+                  // Morphs: small circle → medium pill → wide active pill
+                  animate={{
+                    width: isActive ? 36 : isNext ? 20 : 8,
+                    opacity: isActive ? 1 : isNext ? 0.7 : 0.35,
+                  }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  className="relative h-2 rounded-full bg-gray-300 focus:outline-none flex-shrink-0 overflow-hidden"
+                >
+                  {/* The FM layoutId span slides between active positions smoothly */}
+                  <AnimatePresence>
+                    {isActive && (
+                      <motion.span
+                        layoutId="active-pip"
+                        className="absolute inset-0 bg-navy rounded-full"
+                        initial={false}
+                        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                      />
+                    )}
+                  </AnimatePresence>
 
-                {/* Next dot: live fill sweep previewing the upcoming card */}
-                {isNext && !isPaused && (
-                  <span
-                    key={`next-fill-${nextIndex}-${activeIndex}`}
-                    className="absolute inset-y-0 left-0 bg-navy/60 rounded-full"
-                    style={{
-                      animation: `progress-fill ${AUTO_SCROLL_INTERVAL}ms linear forwards`,
-                      width: "0%",
-                    }}
-                  />
-                )}
-              </button>
-            );
-          })}
-
-          {/* Keyframes */}
-          <style>{`
-            @keyframes progress-fill {
-              from { width: 0% }
-              to   { width: 100% }
-            }
-          `}</style>
+                  {/* Sweep on the next dot — driven by FM, not CSS keyframes */}
+                  {isNext && !isPaused && (
+                    <motion.span
+                      key={`sweep-${activeIndex}`}
+                      className="absolute inset-y-0 left-0 bg-navy/50 rounded-full"
+                      initial={{ width: "0%" }}
+                      animate={{ width: "100%" }}
+                      transition={{
+                        duration: AUTO_SCROLL_INTERVAL / 1000,
+                        ease: "linear",
+                      }}
+                    />
+                  )}
+                </motion.button>
+              );
+            })}
+          </AnimatePresence>
         </div>
 
       </div>
