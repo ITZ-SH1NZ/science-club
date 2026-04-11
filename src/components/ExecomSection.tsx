@@ -76,8 +76,8 @@ function DossierCard({ member, index }: { member: Member; index: number }) {
   const Icon = ICONS[index % ICONS.length];
 
   return (
-    // Scaled-down widths mapping precisely to desktop/mobile 2-row layouts
-    <div className="w-[155px] sm:w-[175px] md:w-[220px] lg:w-[200px] xl:w-[240px] flex-shrink-0 group flex flex-col snap-center">
+    // Fluid vh constraints completely eliminate vertical cutoff on smaller 1080p laptop screens
+    <div className="w-[155px] sm:w-[175px] lg:w-[clamp(140px,20vh,230px)] flex-shrink-0 group flex flex-col snap-center">
       
       {/* Perfect Square Aspect Ratio to save vertical height beautifully */}
       <div className="relative w-full aspect-square">
@@ -97,26 +97,26 @@ function DossierCard({ member, index }: { member: Member; index: number }) {
 
         {/* Top-Left Nested Button */}
         {/* Pushed negatively to perfectly nest inside the white cavity without overlapping the image */}
-        <button className="absolute -top-2 -left-2 md:-top-3 md:-left-3 w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 bg-[#1a1c22] rounded-full flex items-center justify-center text-white cursor-pointer transition-all duration-300 hover:bg-red shadow-lg group-hover:-translate-y-0.5 z-20">
+        <button className="absolute -top-2 -left-2 md:-top-3 md:-left-3 w-8 h-8 md:w-10 md:h-10 lg:w-[clamp(2.5rem,5vh,3.5rem)] lg:h-[clamp(2.5rem,5vh,3.5rem)] bg-[#1a1c22] rounded-full flex items-center justify-center text-white cursor-pointer transition-all duration-300 hover:bg-red shadow-lg group-hover:-translate-y-0.5 z-20">
           <ArrowUpRight className="w-4 h-4 xl:w-5 xl:h-5" />
         </button>
 
         {/* Bottom-Right Nested Pill/Icon */}
-        <div className="absolute -bottom-2 -right-2 md:-bottom-3 md:-right-3 w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 xl:w-14 xl:h-14 bg-white rounded-full border border-gray-100 flex items-center justify-center text-navy shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:text-red hover:scale-105 z-20">
+        <div className="absolute -bottom-2 -right-2 md:-bottom-3 md:-right-3 w-8 h-8 md:w-10 md:h-10 lg:w-[clamp(2.5rem,5vh,3.5rem)] lg:h-[clamp(2.5rem,5vh,3.5rem)] bg-white rounded-full border border-gray-100 flex items-center justify-center text-navy shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all duration-300 hover:text-red hover:scale-105 z-20">
           <Icon className="w-4 h-4 xl:w-5 xl:h-5" />
         </div>
 
       </div>
 
       {/* Typography Block */}
-      <div className="mt-3 lg:mt-5 px-1 lg:px-2 flex flex-col items-center text-center bg-transparent">
-        <h4 className="font-oswald text-[1.1rem] sm:text-lg md:text-xl lg:text-2xl font-bold uppercase text-navy leading-none mb-1 group-hover:text-red transition-colors duration-300 line-clamp-1">
+      <div className="mt-2 lg:mt-[clamp(0.5rem,1.5vh,1.25rem)] px-1 lg:px-2 flex flex-col items-center text-center bg-transparent">
+        <h4 className="font-oswald text-[1.1rem] sm:text-lg md:text-xl lg:text-[clamp(1.1rem,2vh,1.5rem)] font-bold uppercase text-navy leading-none mb-1 group-hover:text-red transition-colors duration-300 line-clamp-1">
           {member.name}
         </h4>
-        <p className="font-inter text-red text-[9px] lg:text-[10px] xl:text-xs font-bold uppercase tracking-wider mb-2 opacity-90 line-clamp-1">
+        <p className="font-inter text-red text-[9px] lg:text-[clamp(9px,1.2vh,12px)] font-bold uppercase tracking-wider mb-1 lg:mb-[clamp(0.25rem,0.8vh,0.5rem)] opacity-90 line-clamp-1">
           {member.role}
         </p>
-        <p className="font-inter text-gray-500 text-[10px] lg:text-[11px] xl:text-xs leading-relaxed line-clamp-2 md:line-clamp-3">
+        <p className="font-inter text-gray-500 text-[10px] lg:text-[clamp(10px,1.4vh,12px)] leading-relaxed line-clamp-2">
           {member.bio}
         </p>
       </div>
@@ -132,34 +132,34 @@ function TeamPanel({ team }: { team: typeof teams[0] }) {
   const inView = useInView(inViewRef, { once: true, margin: "-10%" });
 
   return (
-    // Instead of justify-center, we use justify-start pt-24 lg:pt-28 so the headers are ALWAYS visible!
-    <div className="w-full lg:w-screen flex-shrink-0 flex flex-col items-center justify-start h-auto lg:h-screen bg-[#FAF9F8] relative overflow-x-hidden overflow-y-auto py-24 pt-24 lg:py-4 xl:py-12 lg:pt-28 border-b lg:border-r border-gray-200/50">
+    // CSS clamps map directly to `vh` so the padding compresses perfectly on smaller screens
+    <div className="w-full lg:w-screen flex-shrink-0 flex flex-col items-center justify-start h-auto lg:h-screen bg-[#FAF9F8] relative overflow-hidden py-24 lg:py-0 lg:pt-[clamp(5rem,12vh,8rem)] border-b lg:border-r border-gray-200/50">
       
       {/* Aesthetic Background Numbers */}
-      <span className="absolute top-[8%] left-1/2 -translate-x-1/2 font-oswald text-[16rem] lg:text-[22vw] font-bold text-gray-100/40 leading-none select-none pointer-events-none tracking-tighter mix-blend-multiply z-0">
+      <span className="absolute top-[8%] left-1/2 -translate-x-1/2 font-oswald text-[16rem] lg:text-[18vw] xl:text-[22vw] font-bold text-gray-100/40 leading-none select-none pointer-events-none tracking-tighter mix-blend-multiply z-0">
         {team.label}
       </span>
 
-      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 relative z-10 flex flex-col items-center">
+      <div className="w-full max-w-7xl mx-auto px-4 sm:px-8 relative z-10 flex flex-col items-center h-full">
         
         {/* Top Centered Header Block */}
-        <div ref={inViewRef} className="text-center mb-10 lg:mb-12 xl:mb-16">
-          <div className="flex items-center justify-center gap-3 mb-3 lg:mb-4">
+        <div ref={inViewRef} className="text-center mb-10 lg:mb-[clamp(1.5rem,4vh,4rem)]">
+          <div className="flex items-center justify-center gap-3 mb-2 lg:mb-[clamp(0.5rem,1.5vh,1rem)]">
             <span className="h-[2px] w-4 lg:w-6 bg-red rounded-full" />
-            <span className="font-oswald text-red uppercase text-xs lg:text-sm tracking-[0.2em] font-bold">{team.name}</span>
+            <span className="font-oswald text-red uppercase text-xs lg:text-[clamp(10px,1.5vh,14px)] tracking-[0.2em] font-bold">{team.name}</span>
             <span className="h-[2px] w-4 lg:w-6 bg-red rounded-full" />
           </div>
-          <h3 className="font-oswald text-3xl md:text-4xl lg:text-5xl border-navy font-bold uppercase text-navy leading-tight tracking-tight mb-4">
+          <h3 className="font-oswald text-3xl md:text-4xl lg:text-[clamp(2rem,4.5vh,3rem)] border-navy font-bold uppercase text-navy leading-tight tracking-tight mb-2 lg:mb-[clamp(0.5rem,1.5vh,1rem)]">
             {team.tagline}
           </h3>
-          <p className="font-inter text-gray-500 text-sm md:text-base leading-relaxed max-w-2xl mx-auto px-4">
+          <p className="font-inter text-gray-500 text-sm lg:text-[clamp(12px,1.8vh,16px)] leading-relaxed max-w-2xl mx-auto px-4">
             {team.description}
           </p>
         </div>
 
         {/* 2-Row Flex Grid Below */}
-        {/* flex-wrap & justify-center ensures 5 cards center beautifully */}
-        <div className="w-full flex flex-wrap justify-center items-start gap-x-2 gap-y-8 sm:gap-x-4 sm:gap-y-10 lg:gap-x-6 xl:gap-x-10 lg:gap-y-8 xl:gap-y-12 shrink-0">
+        {/* Fluid gap scaling relative to vertical height */}
+        <div className="w-full flex flex-wrap justify-center items-start gap-x-2 sm:gap-x-4 lg:gap-x-6 xl:gap-x-10 gap-y-8 lg:gap-y-[clamp(1rem,3.5vh,3rem)] xl:gap-y-[clamp(1.5rem,4vh,3rem)] shrink-0">
           {team.members.map((member, i) => (
             <motion.div
               key={member.name}
