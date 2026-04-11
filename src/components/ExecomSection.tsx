@@ -129,7 +129,7 @@ function DossierCard({ member, index }: { member: Member; index: number }) {
 
 function TeamPanel({ team }: { team: typeof teams[0] }) {
   const inViewRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(inViewRef, { margin: "-15%" });
+  const inView = useInView(inViewRef, { once: true, margin: "-10%" });
 
   return (
     // Instead of justify-center, we use justify-start pt-24 lg:pt-28 so the headers are ALWAYS visible!
