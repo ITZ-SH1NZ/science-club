@@ -121,10 +121,10 @@ export function EventCenter() {
   };
 
   return (
-    <section className="bg-white py-12 md:py-16 text-navy font-inter border-b border-gray-200 relative z-30 -mt-16 sm:-mt-24 w-full max-w-[95%] mx-auto left-0 right-0 shadow-[0_15px_40px_rgba(0,0,0,0.06)] rounded-3xl">
+    <section className="bg-white py-12 md:py-16 text-navy font-inter border-b border-gray-200 relative z-30 -mt-16 sm:-mt-24 w-full max-w-[95%] mx-auto left-0 right-0 shadow-[0_15px_40px_rgba(0,0,0,0.06)] rounded-3xl overflow-hidden">
+      
+      {/* Header lives in a padded container */}
       <div className="container mx-auto px-4 lg:px-8">
-        
-        {/* Header Region */}
         <div className="flex items-center justify-between mb-8 md:mb-10">
           <motion.h2
             initial={{ opacity: 0, x: -20 }}
@@ -143,18 +143,20 @@ export function EventCenter() {
             <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
           </motion.button>
         </div>
+      </div>
 
-        {/* Cinematic Horizontal Scrolling Track */}
+      {/* Carousel: full section width — rounded-3xl + overflow-hidden clips edges cleanly */}
+      <div>
         <div
           ref={(el: HTMLDivElement | null) => {
             (ref as React.MutableRefObject<HTMLDivElement | null>).current = el;
             (scrollRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
           }}
           onScroll={handleScroll}
-          className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 lg:gap-8 pb-10 pt-4 hide-scrollbar"
+          className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 lg:gap-8 pb-4 pt-4 hide-scrollbar"
         >
-          {/* Leading spacer: pushes first card to center */}
-          <div className="min-w-[calc(50vw-130px)] md:min-w-[calc(50vw-200px)] lg:min-w-[calc(50vw-220px)] flex-shrink-0" />
+          {/* Leading spacer */}
+          <div className="min-w-[calc(50vw-39vw)] sm:min-w-[calc(50vw-29vw)] md:min-w-[calc(50vw-200px)] lg:min-w-[calc(50vw-220px)] flex-shrink-0" />
           {events.map((event, i) => (
             <motion.div
               key={i}
@@ -163,7 +165,7 @@ export function EventCenter() {
               transition={{ duration: 0.6, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
               onClick={() => goTo(i)}
               className={cn(
-                "relative min-w-[260px] h-[360px] md:min-w-[400px] lg:min-w-[440px] md:h-[520px] flex-shrink-0 snap-center rounded-2xl md:rounded-[2rem] flex flex-col group cursor-pointer overflow-hidden transition-all duration-500 isolate",
+                "relative min-w-[78vw] h-[72vw] sm:min-w-[58vw] sm:h-[58vw] md:min-w-[400px] md:h-[520px] lg:min-w-[440px] flex-shrink-0 snap-center rounded-2xl md:rounded-[2rem] flex flex-col group cursor-pointer overflow-hidden transition-all duration-500 isolate",
                 event.status === "UPCOMING" 
                   ? "border-2 border-transparent hover:border-red" 
                   : "border-2 border-transparent hover:border-navy"
@@ -235,12 +237,15 @@ export function EventCenter() {
               </div>
             </motion.div>
           ))}
-          {/* Trailing spacer: allows last card to reach center */}
-          <div className="min-w-[calc(50vw-130px)] md:min-w-[calc(50vw-200px)] lg:min-w-[calc(50vw-220px)] flex-shrink-0" />
+          {/* Trailing spacer */}
+          <div className="min-w-[calc(50vw-39vw)] sm:min-w-[calc(50vw-29vw)] md:min-w-[calc(50vw-200px)] lg:min-w-[calc(50vw-220px)] flex-shrink-0" />
         </div>
+      </div>
 
+      {/* Indicators in a padded container */}
+      <div className="container mx-auto px-4 lg:px-8 pt-6 pb-2">
         {/* ── Morphing Circle-to-Pill Indicator ── */}
-        <div className="flex items-center gap-[6px] mt-4 px-1">
+        <div className="flex items-center gap-[6px]">
           <AnimatePresence>
             {events.map((_, i) => {
               const nextIndex = (activeIndex + 1) % events.length;

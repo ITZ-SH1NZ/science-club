@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useScroll, useTransform, useMotionValueEvent } from "framer-motion";
 import { Menu, X, Atom, User, Search, ChevronDown, ArrowRight } from "lucide-react";
 import Link from "next/link";
@@ -17,12 +18,13 @@ const NAV_LINKS = [
     ]
   },
   { 
-    name: "RESOURCES", 
-    href: "#resources",
+    name: "INFO", 
+    href: "/info/about",
     subLinks: [
-      { name: "Lab Access", href: "/resources/labs" },
-      { name: "Funding Applications", href: "/resources/funding" },
-      { name: "Tech Library", href: "/resources/library" }
+      { name: "About Science Club", href: "/info/about" },
+      { name: "Execom", href: "/info/execom" },
+      { name: "Our Mission", href: "/info/mission" },
+      { name: "Join Us", href: "/info/join" }
     ]
   },
   { 
@@ -41,6 +43,9 @@ export function Header() {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
   
   const { scrollY } = useScroll();
 
@@ -48,20 +53,55 @@ export function Header() {
     setIsScrolled(latest > 50);
   });
 
+  // On the home page: fade from transparent → navy as user scrolls.
+  // On sub-pages: White → Navy transition.
   const backgroundColor = useTransform(
     scrollY,
     [0, 100],
-    ["rgba(0, 0, 0, 0)", "rgba(0, 28, 88, 1)"] 
+    isHomePage
+      ? ["rgba(0, 0, 0, 0)", "rgba(0, 28, 88, 1)"]
+      : ["rgba(255, 255, 255, 1)", "rgba(0, 28, 88, 1)"]
   );
+
+  // Transitions for text and icons on sub-pages
+  const textColor = useTransform(
+    scrollY,
+    [0, 100],
+    isHomePage
+      ? ["rgba(255, 255, 255, 1)", "rgba(255, 255, 255, 1)"]
+      : ["rgba(0, 28, 88, 1)", "rgba(255, 255, 255, 1)"]
+  );
+
+  const iconColor = useTransform(
+    scrollY,
+    [0, 100],
+    isHomePage
+      ? ["rgba(255, 255, 255, 1)", "rgba(255, 255, 255, 1)"]
+      : ["rgba(0, 28, 88, 1)", "rgba(255, 255, 255, 1)"]
+  );
+
   const logoScale = useTransform(scrollY, [0, 100], [1, 0.85]);
+
+  const openDropdown = (name: string) => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setActiveDropdown(name);
+  };
+
+  const scheduleClose = () => {
+    closeTimer.current = setTimeout(() => setActiveDropdown(null), 200);
+  };
+
+  const cancelClose = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+  };
 
   return (
     <>
       <motion.header
         id="main-nav-header"
-        style={{ backgroundColor }}
+        style={{ backgroundColor, color: textColor }}
         className={cn(
-          "fixed top-0 left-0 right-0 z-50 font-oswald text-white shadow-sm flex items-center transition-[height,background-color,opacity] duration-300",
+          "fixed top-0 left-0 right-0 z-50 font-oswald shadow-sm flex items-center transition-[height,opacity] duration-300",
           isScrolled ? "h-[4.5rem]" : "h-24"
         )}
       >
@@ -81,31 +121,34 @@ export function Header() {
           <div className="flex items-center justify-between h-full relative">
             
             {/* Left side: Burger & Desktop Nav */}
-            <div className="flex items-center gap-8 flex-[1.5] h-full relative" onMouseLeave={() => setActiveDropdown(null)}>
-              <button
+            <div className="flex items-center gap-8 flex-[1.5] h-full relative" onMouseLeave={scheduleClose}>
+              <motion.button
+                style={{ color: iconColor }}
                 className="hover:opacity-70 transition-opacity flex items-center justify-center p-2"
                 onClick={() => setIsMobileMenuOpen(true)}
               >
                 <Menu className="w-8 h-8" />
-              </button>
+              </motion.button>
               
               <nav className="hidden lg:flex items-center gap-8 h-full">
                 {NAV_LINKS.map((link) => (
                   <div 
                     key={link.name} 
                     className="h-full flex flex-col justify-center"
-                    onMouseEnter={() => setActiveDropdown(link.name)}
+                    onMouseEnter={() => openDropdown(link.name)}
                   >
-                    <Link
-                      href={link.href}
-                      className={cn(
-                        "text-lg tracking-wide transition-colors flex items-center gap-1 relative py-2 group",
-                        activeDropdown === link.name ? "text-red" : "text-white hover:text-red"
-                      )}
-                    >
-                      {link.name}
-                      <ChevronDown className={cn("w-4 h-4 transition-transform duration-300", activeDropdown === link.name ? "rotate-180" : "rotate-0")} />
-                    </Link>
+                    <motion.div style={{ color: textColor }}>
+                      <Link
+                        href={link.href}
+                        className={cn(
+                          "text-lg tracking-wide transition-colors flex items-center gap-1 relative py-2 group",
+                          activeDropdown === link.name ? "text-red" : "hover:text-red"
+                        )}
+                      >
+                        {link.name}
+                        <ChevronDown className={cn("w-4 h-4 transition-transform duration-300", activeDropdown === link.name ? "rotate-180" : "rotate-0")} />
+                      </Link>
+                    </motion.div>
                   </div>
                 ))}
               </nav>
@@ -118,6 +161,8 @@ export function Header() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 5, scale: 0.98 }}
                     transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                    onMouseEnter={cancelClose}
+                    onMouseLeave={scheduleClose}
                     className="absolute top-full left-16 mt-2 bg-white rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.1)] overflow-hidden min-w-[300px] border border-gray-100"
                   >
                     {/* Animate content strictly */}
@@ -169,16 +214,27 @@ export function Header() {
             <div className="flex items-center justify-end gap-4 md:gap-6 flex-[1.5] h-full">
               
               {/* Expanding Search Pill */}
-              <button className="hidden sm:flex items-center justify-start overflow-hidden rounded-full transition-all duration-500 ease-[0.22,1,0.36,1] w-10 h-10 hover:w-[130px] hover:bg-white/10 group px-[9px]">
-                <Search className="w-5 h-5 flex-shrink-0 text-white group-hover:text-red transition-colors" />
-                <span className="ml-3 text-[13px] font-oswald tracking-widest text-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap mt-0.5 flex-shrink-0">
+              <motion.button 
+                style={{ backgroundColor: isHomePage || isScrolled ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }}
+                className="hidden sm:flex items-center justify-start overflow-hidden rounded-full transition-all duration-500 ease-[0.22,1,0.36,1] w-10 h-10 hover:w-[130px] group px-[9px]"
+              >
+                <motion.div style={{ color: iconColor }}>
+                  <Search className="w-5 h-5 flex-shrink-0 group-hover:text-red transition-colors" />
+                </motion.div>
+                <motion.span 
+                  style={{ color: textColor }}
+                  className="ml-3 text-[13px] font-oswald tracking-widest opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap mt-0.5 flex-shrink-0"
+                >
                   SEARCH...
-                </span>
-              </button>
+                </motion.span>
+              </motion.button>
 
-              <button className="hover:text-red transition-colors hidden sm:flex items-center justify-center p-2 w-10 h-10 rounded-full hover:bg-white/5">
-                <User className="w-5 h-5" />
-              </button>
+              <motion.button 
+                style={{ color: iconColor, backgroundColor: isHomePage || isScrolled ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.03)" }}
+                className="transition-colors hidden sm:flex items-center justify-center p-2 w-10 h-10 rounded-full"
+              >
+                <User className="w-5 h-5 hover:text-red transition-colors" />
+              </motion.button>
               <motion.a
                 href="#join"
                 className="hidden md:flex items-center gap-2 bg-red text-white px-8 py-2.5 uppercase text-[17px] font-bold tracking-wide rounded-full overflow-hidden relative group"
