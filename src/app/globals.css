@@ -5,9 +5,9 @@
   --foreground: #111111;
   --muted: #F5F5F5;
   
-  --psg-navy: #001C58;
-  --psg-red: #DA291C;
-  --psg-gold: #C8A059;
+  --brand-navy: #001C58;
+  --brand-red: #DA291C;
+  --brand-gold: #C8A059;
 }
 
 @theme inline {
@@ -15,9 +15,9 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   
-  --color-navy: var(--psg-navy);
-  --color-red: var(--psg-red);
-  --color-gold: var(--psg-gold);
+  --color-navy: var(--brand-navy);
+  --color-red: var(--brand-red);
+  --color-gold: var(--brand-gold);
   
   --font-oswald: var(--font-oswald), sans-serif;
   --font-inter: var(--font-inter), sans-serif;
@@ -46,6 +46,6 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 }
 
 /* Utility for dynamic images overlay */
-.psg-gradient {
+.brand-gradient {
   background: linear-gradient(0deg, rgba(0, 28, 88, 0.95) 0%, rgba(0, 28, 88, 0.4) 40%, transparent 100%);
 }

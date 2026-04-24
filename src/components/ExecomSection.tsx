@@ -191,7 +191,7 @@ export function ExecomSection() {
     const track = trackRef.current;
     if (!container || !track) return;
 
-    let ctx = gsap.context(() => {
+    const ctx = gsap.context(() => {
       const initScroll = () => {
         ScrollTrigger.getAll().forEach(t => t.kill());
 

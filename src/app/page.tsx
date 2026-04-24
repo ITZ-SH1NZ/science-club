@@ -7,6 +7,8 @@ import { ExecomSection } from "@/components/ExecomSection";
 import { CtaSection } from "@/components/CtaSection";
 import { Footer } from "@/components/Footer";
 import { Marquee } from "@/components/Marquee";
+import { MapSection } from "@/components/MapSection";
+import { ContactSection } from "@/components/ContactSection";
 
 export default function Home() {
   return (
@@ -22,6 +24,8 @@ export default function Home() {
         <AboutSection />
         <ExecomSection />
         <CtaSection />
+        <MapSection />
+        <ContactSection />
       </main>
 
       {/* Footer: sticky reveal on desktop, normal flow on mobile */}

@@ -31,9 +31,9 @@ export function Hero() {
       </motion.div>
 
       {/* Dark gradient overlay anchored to bottom */}
-      <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/50 to-transparent lg:psg-gradient pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-t from-navy via-navy/50 to-transparent lg:brand-gradient pointer-events-none" />
 
-      {/* Content strictly bottom-left aligned like PSG Match Hero */}
+      {/* Content strictly bottom-left aligned */}
       <div className="container mx-auto px-4 lg:px-6 relative z-10 w-full mb-20 lg:mb-32 font-oswald text-white pointer-events-none">
         <div className="max-w-5xl overflow-hidden">
           <motion.div

@@ -7,7 +7,17 @@ import { cn } from "@/lib/utils";
 
 const NEWS_INTERVAL = 6000; // 6 seconds per article
 
-const news = [
+type NewsItem = {
+  id: string;
+  tag: string;
+  date: string;
+  title: string;
+  desc: string;
+  img: string;
+  breaking?: boolean;
+};
+
+const news: NewsItem[] = [
   {
     id: "01",
     tag: "ACHIEVEMENTS",
@@ -101,7 +111,7 @@ export function NewsSection() {
                 className={cn(
                   "relative border-b overflow-hidden cursor-pointer transition-all duration-[800ms] ease-[0.22,1,0.36,1] group flex flex-col justify-end isolate",
                   isExpanded ? "h-[450px] sm:h-[500px] md:h-[550px]" : "h-20 lg:h-24 hover:bg-gray-50",
-                  (item as any).breaking ? "border-l-4 border-l-red border-b-gray-200" : "border-l-0 border-b-gray-200"
+                  item.breaking ? "border-l-4 border-l-red border-b-gray-200" : "border-l-0 border-b-gray-200"
                 )}
               >
                 
@@ -111,7 +121,7 @@ export function NewsSection() {
                   isExpanded ? "opacity-100" : "opacity-0"
                 )}>
                   {/* Photo bleeds through the navy at ~35% — faint enough to keep text crisp */}
-                  <img src={item.img} className="w-full h-full object-cover" />
+                  <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-navy/75" />
                 </div>
 
@@ -140,7 +150,7 @@ export function NewsSection() {
 
                     {/* Right: BREAKING badge + Arrow */}
                     <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
-                      {(item as any).breaking && !isExpanded && (
+                      {item.breaking && !isExpanded && (
                         <span className="hidden sm:flex items-center gap-1.5 font-oswald text-[10px] tracking-[0.2em] font-bold uppercase text-red">
                           <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red opacity-75" />

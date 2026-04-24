@@ -76,7 +76,7 @@ export function AboutSection() {
                 Minds.
               </h2>
               <p className="text-gray-500 font-inter text-base leading-relaxed max-w-md">
-                Science Club ASIET is a student-run community at the intersection of curiosity and creation. We don't just study science — we practise it through hands-on projects, industry mentorships, and inter-college competitions.
+                Science Club ASIET is a student-run community at the intersection of curiosity and creation. We don&apos;t just study science — we practise it through hands-on projects, industry mentorships, and inter-college competitions.
               </p>
             </div>
 

@@ -31,7 +31,6 @@ const NAV_LINKS = [
     name: "EVENTS", 
     href: "#events",
     subLinks: [
-      { name: "Hackathons", href: "/events/hackathons" },
       { name: "Guest Seminars", href: "/events/seminars" },
       { name: "Workshops", href: "/events/workshops" }
     ]

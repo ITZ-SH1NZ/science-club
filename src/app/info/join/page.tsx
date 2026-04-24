@@ -99,7 +99,7 @@ export default function JoinPage() {
                       type={field.type}
                       required
                       placeholder={field.placeholder}
-                      value={(form as any)[field.id]}
+                      value={form[field.id as keyof typeof form]}
                       onChange={(e) => setForm(f => ({ ...f, [field.id]: e.target.value }))}
                       className="border border-gray-200 rounded-xl px-4 py-3 text-navy text-sm focus:outline-none focus:border-red transition-colors placeholder:text-gray-300"
                     />

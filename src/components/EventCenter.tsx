@@ -31,10 +31,10 @@ const events = [
     img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80" 
   },
   { 
-    title: "Neurolink API Hackathon", 
+    title: "Neural Network Research Seminar", 
     dateDay: "22",
     dateMonth: "SEP", 
-    type: "COMPETITION", 
+    type: "SEMINAR", 
     status: "COMPLETED", 
     img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80" 
   },
@@ -60,6 +60,7 @@ export function EventCenter() {
 
   // Guards handleScroll from firing during programmatic smooth-scroll
   const isAutoScrolling = useRef(false);
+  const scrollTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Scroll the carousel to center a specific card index
   const scrollToIndex = useCallback((index: number) => {
@@ -109,15 +110,16 @@ export function EventCenter() {
     setActiveIndex(closest);
     // Pause auto-scroll for 6s after any manual interaction
     setIsPaused(true);
-    clearTimeout((handleScroll as any)._timer);
-    (handleScroll as any)._timer = setTimeout(() => setIsPaused(false), 6000);
+    if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    scrollTimerRef.current = setTimeout(() => setIsPaused(false), 6000);
   }, []);
 
   const goTo = (index: number) => {
     setActiveIndex(index);
     scrollToIndex(index);
     setIsPaused(true);
-    setTimeout(() => setIsPaused(false), 6000);
+    if (scrollTimerRef.current) clearTimeout(scrollTimerRef.current);
+    scrollTimerRef.current = setTimeout(() => setIsPaused(false), 6000);
   };
 
   return (
