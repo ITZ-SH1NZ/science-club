@@ -204,7 +204,7 @@ export default function AboutPage() {
         });
 
         mobHeroTl.to({}, { duration: 0.2 }) // Buffer at start
-          .to(heroImgRef.current, { width: "100%", height: "100vh", ease: "power2.inOut", duration: 1 }, 0.2)
+          .to(heroImgRef.current, { width: "100%", height: "50vh", ease: "power2.inOut", duration: 1 }, 0.2)
           .to(heroText1Ref.current, { xPercent: -100, opacity: 0, ease: "power2.out", duration: 1 }, 0.2)
           .to(heroText2Ref.current, { xPercent: 100, opacity: 0, ease: "power2.out", duration: 1 }, 0.2)
           .to({}, { duration: 0.2 }); // Buffer at end
@@ -337,18 +337,21 @@ export default function AboutPage() {
         {/* Background Grid */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:4rem_4rem]" />
 
-        {/* Central Parallax Image */}
-        <div ref={heroImgRef} className="absolute z-10 w-[85vw] h-[55vh] md:w-[50vw] md:h-[70vh] overflow-hidden transform-gpu">
+        {/* Central Parallax Video */}
+        <div ref={heroImgRef} className="absolute z-10 w-[90vw] h-[40vh] md:w-[60vw] md:h-[60vh] overflow-hidden transform-gpu rounded-sm border border-white/10 shadow-2xl bg-black">
           <video
+            ref={(el) => { if (el) { el.play().catch(() => { }); } }}
             autoPlay
             loop
             muted
             playsInline
-            className="w-full h-full object-cover scale-[1.1]"
+            disablePictureInPicture
+            className="w-full h-full object-cover scale-[1.05]"
           >
+            {/* Direct, unblocked archive.org video: Apollo 11 Onboard 16mm Film */}
             <source src="https://cdn.pixabay.com/video/2025/03/04/262464_large.mp4" type="video/mp4" />
           </video>
-          <div className="absolute inset-0 bg-navy/20 mix-blend-multiply" />
+          <div className="absolute inset-0 bg-navy/30 mix-blend-multiply" />
         </div>
 
         {/* Foreground Typography */}
