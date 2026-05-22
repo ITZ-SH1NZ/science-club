@@ -29,10 +29,11 @@ const NAV_LINKS = [
   },
   { 
     name: "EVENTS", 
-    href: "#events",
+    href: "/events",
     subLinks: [
-      { name: "Guest Seminars", href: "/events/seminars" },
-      { name: "Workshops", href: "/events/workshops" }
+      { name: "All Events", href: "/events" },
+      { name: "Guest Seminars", href: "/events" },
+      { name: "Workshops", href: "/events" }
     ]
   },
 ];

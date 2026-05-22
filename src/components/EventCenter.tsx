@@ -2,51 +2,10 @@
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-const events = [
-  { 
-    title: "AI Horizons Summit '25", 
-    dateDay: "12",
-    dateMonth: "OCT", 
-    type: "CONFERENCE", 
-    status: "UPCOMING", 
-    img: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80" 
-  },
-  { 
-    title: "Quantum Computing Hardware", 
-    dateDay: "18",
-    dateMonth: "OCT", 
-    type: "SEMINAR", 
-    status: "UPCOMING", 
-    img: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80" 
-  },
-  { 
-    title: "Autonomous Robotics Build V2", 
-    dateDay: "04",
-    dateMonth: "NOV", 
-    type: "WORKSHOP", 
-    status: "UPCOMING", 
-    img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=800&q=80" 
-  },
-  { 
-    title: "Neural Network Research Seminar", 
-    dateDay: "22",
-    dateMonth: "SEP", 
-    type: "SEMINAR", 
-    status: "COMPLETED", 
-    img: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=800&q=80" 
-  },
-  { 
-    title: "Advanced Electronics Architecture", 
-    dateDay: "14",
-    dateMonth: "AUG", 
-    type: "WORKSHOP", 
-    status: "COMPLETED", 
-    img: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80" 
-  }
-];
+import { eventsData as events } from "@/lib/events";
 
 const AUTO_SCROLL_INTERVAL = 4000; // 4 seconds per card
 
@@ -136,14 +95,16 @@ export function EventCenter() {
           >
             Event Center
           </motion.h2>
-          <motion.button
-            className="flex items-center gap-2 font-oswald uppercase text-base md:text-lg text-red hover:text-navy transition-colors font-bold tracking-wide group"
-            whileHover={{ x: 3 }}
-            transition={{ type: "spring", stiffness: 400 }}
-          >
-            All Events
-            <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
-          </motion.button>
+          <Link href="/events" passHref>
+            <motion.button
+              className="flex items-center gap-2 font-oswald uppercase text-base md:text-lg text-red hover:text-navy transition-colors font-bold tracking-wide group"
+              whileHover={{ x: 3 }}
+              transition={{ type: "spring", stiffness: 400 }}
+            >
+              All Events
+              <ArrowRight className="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" />
+            </motion.button>
+          </Link>
         </div>
       </div>
 

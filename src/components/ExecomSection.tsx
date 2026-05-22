@@ -191,28 +191,29 @@ export function ExecomSection() {
     const track = trackRef.current;
     if (!container || !track) return;
 
+    let timeoutId: NodeJS.Timeout;
+
     const ctx = gsap.context(() => {
       const initScroll = () => {
-        ScrollTrigger.getAll().forEach(t => t.kill());
-
-        // Because each TeamPanel is exactly 100vw, total scroll = (n-1)*100vw
+        // We do NOT use ScrollTrigger.getAll().kill() as it destroys other pages' triggers!
+        // gsap.context will automatically clean up triggers created inside this scope on unmount.
+        
         const panels = teams.length;
-        const totalScrollDistance = (panels - 1) * window.innerWidth;
 
         gsap.to(track, {
-          x: () => -totalScrollDistance,
+          // Use functional values so invalidateOnRefresh recalculates it properly on resize
+          x: () => -((panels - 1) * window.innerWidth),
           ease: "none",
           scrollTrigger: {
             id: "execom-st",
             trigger: container,
             start: "top top",
-            end: () => `+=${totalScrollDistance}`, // Map 1px vertical scroll to 1px horizontal transverse
+            end: () => `+=${(panels - 1) * window.innerWidth}`,
             scrub: 1.0,          
             pin: true,           
             pinSpacing: true,    
             anticipatePin: 1,
             invalidateOnRefresh: true,
-            // GSAP auto snapping cleanly between 100vw presentation panels
             snap: {
               snapTo: 1 / (panels - 1),
               duration: { min: 0.2, max: 0.6 },
@@ -234,22 +235,20 @@ export function ExecomSection() {
             scrollTrigger: {
               trigger: container,
               start: "top 10%",
-              // Keep it hidden until the entire track un-pins and leaves
-              end: () => `+=${totalScrollDistance + window.innerHeight * 0.8}`,
+              end: () => `+=${((panels - 1) * window.innerWidth) + window.innerHeight * 0.8}`,
               toggleActions: "play reverse play reverse",
+              invalidateOnRefresh: true,
             }
           });
         }
       };
 
-      setTimeout(initScroll, 100);
-      window.addEventListener("resize", () => {
-        ScrollTrigger.refresh();
-        initScroll();
-      });
+      // Delay to ensure DOM is ready
+      timeoutId = setTimeout(initScroll, 100);
     });
 
     return () => {
+      clearTimeout(timeoutId);
       ctx.revert();
     };
   }, []);
