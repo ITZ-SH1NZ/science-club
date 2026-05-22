@@ -3,6 +3,12 @@
 import { useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 // Expose lenis instance globally so GSAP ScrollTrigger can hook into it
 declare global {
@@ -27,14 +33,19 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
     lenisRef.current = lenis;
     window.__lenis = lenis;
 
-    function raf(time: number) {
-      lenis.raf(time);
-      requestAnimationFrame(raf);
-    }
+    // Sync Lenis with GSAP ScrollTrigger - CRITICAL for pinned elements!
+    lenis.on("scroll", ScrollTrigger.update);
+    
+    const ticker = (time: number) => {
+      lenis.raf(time * 1000);
+    };
 
-    requestAnimationFrame(raf);
+    gsap.ticker.add(ticker);
+    gsap.ticker.lagSmoothing(0);
 
     return () => {
+      lenis.off("scroll", ScrollTrigger.update);
+      gsap.ticker.remove(ticker);
       lenis.destroy();
       lenisRef.current = null;
       window.__lenis = undefined;
@@ -44,7 +55,15 @@ export function SmoothScroll({ children }: { children: React.ReactNode }) {
   // Reset scroll to top immediately upon route change
   useEffect(() => {
     if (lenisRef.current) {
+      window.scrollTo(0, 0); // Native scroll to top
       lenisRef.current.scrollTo(0, { immediate: true });
+      
+      // Give the new page's DOM time to mount and then refresh ScrollTrigger markers
+      const timeout = setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 100);
+
+      return () => clearTimeout(timeout);
     }
   }, [pathname]);
 

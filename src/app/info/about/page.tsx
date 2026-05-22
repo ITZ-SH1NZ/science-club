@@ -345,11 +345,12 @@ export default function AboutPage() {
             loop
             muted
             playsInline
+            preload="auto"
             disablePictureInPicture
             className="w-full h-full object-cover scale-[1.05]"
           >
-            {/* Direct, unblocked archive.org video: Apollo 11 Onboard 16mm Film */}
-            <source src="https://cdn.pixabay.com/video/2025/03/04/262464_large.mp4" type="video/mp4" />
+            {/* Optimized small version of the video for faster loading */}
+            <source src="https://cdn.pixabay.com/video/2025/03/04/262464_small.mp4" type="video/mp4" />
           </video>
           <div className="absolute inset-0 bg-navy/30 mix-blend-multiply" />
         </div>
