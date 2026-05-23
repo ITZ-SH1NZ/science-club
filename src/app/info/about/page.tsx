@@ -260,9 +260,9 @@ export default function AboutPage() {
 
         // Add scrollTrigger to modify timeScale based on velocity
         ScrollTrigger.create({
-          trigger: document.body,
-          start: "top top",
-          end: "bottom bottom",
+          trigger: marqueeRef.current,
+          start: "top bottom",
+          end: "bottom top",
           onUpdate: (self) => {
             const velocity = self.getVelocity();
             // Default timeScale is 1. If scrolling fast, velocity increases it.

@@ -36,9 +36,19 @@ body {
   display: none;
 }
 
-.smooth-scroll {
-  scroll-behavior: smooth;
+/* Custom Scrollbar and Lenis smooth scrolling compatibility */
+html.lenis, html.lenis body {
+  height: auto;
 }
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
 
 h1, h2, h3, h4, h5, h6, .font-heading {
   font-family: var(--font-oswald);
