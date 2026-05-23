@@ -109,7 +109,7 @@ export function NewsSection() {
                 key={item.id}
                 onClick={() => handleManualSelect(item.id)}
                 className={cn(
-                  "relative border-b overflow-hidden cursor-pointer transition-all duration-[800ms] ease-[0.22,1,0.36,1] group flex flex-col justify-end isolate",
+                  "relative border-b overflow-hidden cursor-pointer transition-[height,background-color] duration-[800ms] ease-[0.22,1,0.36,1] will-change-[height] group flex flex-col justify-end isolate",
                   isExpanded ? "h-[450px] sm:h-[500px] md:h-[550px]" : "h-20 lg:h-24 hover:bg-gray-50",
                   item.breaking ? "border-l-4 border-l-red border-b-gray-200" : "border-l-0 border-b-gray-200"
                 )}
@@ -142,7 +142,7 @@ export function NewsSection() {
 
                     {/* Centre-left: Headline — left aligned, takes remaining space */}
                     <h3 className={cn(
-                        "font-oswald text-lg sm:text-2xl lg:text-3xl uppercase font-bold transition-all duration-[600ms] ease-[0.22,1,0.36,1] truncate flex-1 min-w-0",
+                        "font-oswald text-lg sm:text-2xl lg:text-3xl uppercase font-bold transition-[opacity,transform] duration-[600ms] ease-[0.22,1,0.36,1] truncate flex-1 min-w-0",
                         isExpanded ? "opacity-0 -translate-y-4" : "opacity-100 translate-y-0 text-navy"
                     )}>
                       {item.title}
@@ -160,7 +160,7 @@ export function NewsSection() {
                         </span>
                       )}
                       <ArrowUpRight className={cn(
-                          "w-5 h-5 lg:w-6 lg:h-6 transition-all duration-[600ms]",
+                          "w-5 h-5 lg:w-6 lg:h-6 transition-[opacity,transform,color] duration-[600ms] ease-[0.22,1,0.36,1]",
                           isExpanded ? "text-white scale-50 opacity-0" : "text-navy group-hover:text-red scale-100 opacity-100"
                       )} />
                     </div>
@@ -184,7 +184,7 @@ export function NewsSection() {
 
                 {/* ── Expanded Detail View (Content animates upwards into view) ── */}
                 <div className={cn(
-                  "relative z-10 w-full h-full flex flex-col justify-end p-4 sm:p-6 md:p-10 lg:p-16 transition-all duration-[800ms] ease-[0.22,1,0.36,1]",
+                  "relative z-10 w-full h-full flex flex-col justify-end p-4 sm:p-6 md:p-10 lg:p-16 transition-[opacity,transform] duration-[800ms] ease-[0.22,1,0.36,1]",
                   isExpanded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12 pointer-events-none"
                 )}>
                    <div className="w-full max-w-4xl text-white">
