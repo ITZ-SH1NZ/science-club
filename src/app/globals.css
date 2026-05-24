@@ -59,3 +59,105 @@ h1, h2, h3, h4, h5, h6, .font-heading {
 .brand-gradient {
   background: linear-gradient(0deg, rgba(0, 28, 88, 0.95) 0%, rgba(0, 28, 88, 0.4) 40%, transparent 100%);
 }
+
+/* Premium Text Shimmer / Shine Effect (GPU Accelerated) */
+.text-shine {
+  background: linear-gradient(to right, #DA291C 20%, #FF5C4D 40%, #FF5C4D 60%, #DA291C 80%);
+  background-size: 200% auto;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  animation: shine-effect 5s linear infinite;
+  will-change: background-position;
+}
+
+@keyframes shine-effect {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Timeline Active Node Concentric Pulse (GPU Accelerated) */
+.active-dot-ping {
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
+  border: 1px solid rgba(218, 41, 28, 0.4);
+  pointer-events: none;
+  animation: active-node-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes active-node-pulse {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+/* Cosmic Orbiting Nodes inside SVG (GPU Accelerated) */
+.cosmic-orbit-cw {
+  animation: cosmic-orbit-cw-anim 40s linear infinite;
+  transform-origin: 250px 250px;
+  will-change: transform;
+}
+
+.cosmic-orbit-ccw {
+  animation: cosmic-orbit-ccw-anim 55s linear infinite;
+  transform-origin: 250px 250px;
+  will-change: transform;
+}
+
+@keyframes cosmic-orbit-cw-anim {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes cosmic-orbit-ccw-anim {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+/* Stellar Blueprint Grid Intersect Nodes (GPU Accelerated) */
+.stellar-node {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 9999px;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+.stellar-node-slow {
+  background-color: #DA291C;
+  box-shadow: 0 0 8px #DA291C;
+  animation: stellar-pulse 5s ease-in-out infinite;
+}
+
+.stellar-node-fast {
+  background-color: #DA291C;
+  box-shadow: 0 0 8px #DA291C;
+  animation: stellar-pulse 3s ease-in-out infinite 1.5s;
+}
+
+.stellar-node-gold {
+  background-color: #C8A059;
+  box-shadow: 0 0 8px #C8A059;
+  animation: stellar-pulse 4s ease-in-out infinite 0.7s;
+}
+
+@keyframes stellar-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.15; }
+  50% { transform: scale(1.6); opacity: 0.8; }
+}
+
+/* Slow GPU Spin for Astrolabe (GPU Accelerated, 0% JS load) */
+.astrolabe-spin {
+  animation: astrolabe-spin-anim 240s linear infinite;
+  will-change: transform;
+}
+
+@keyframes astrolabe-spin-anim {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
